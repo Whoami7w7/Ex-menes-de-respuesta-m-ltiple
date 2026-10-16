@@ -1,0 +1,15 @@
+PAQUETE DE CORRECCIONES AVANCE G-N
+
+Incluye:
+- security/harden.py: protege el historial contra inyección HTML a partir de localStorage.
+- build-apk.yml: flujo de GitHub Actions con Java configurado correctamente y paso de endurecimiento.
+- SECURITY_AUDIT.md: hallazgos y revisiones pendientes.
+
+INCORPORACIÓN AL REPOSITORIO
+1. Sube la carpeta security y su archivo harden.py a la raíz del repositorio.
+2. Reemplaza .github/workflows/build-apk.yml con build-apk.yml (conserva la ruta .github/workflows/).
+3. Sube SECURITY_AUDIT.md a la raíz.
+4. Abre GitHub > Actions > Build Avance G-N APK > Run workflow.
+5. Descarga Avance-GN-APK-seguridad solo si el flujo termina correctamente.
+
+El parche detiene la compilación si no encuentra la función esperada. No instala automáticamente la actualización en la tableta.

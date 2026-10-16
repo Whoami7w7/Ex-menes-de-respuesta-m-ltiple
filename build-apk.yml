@@ -1,0 +1,48 @@
+name: Build Avance G-N APK
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'Avance_GN_Android_Proyecto_v17_RAIZ.zip'
+      - 'security/**'
+      - '.github/workflows/build-apk.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  construir:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar proyecto
+        uses: actions/checkout@v4
+      - name: Configurar Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Instalar Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+      - name: Extraer proyecto
+        run: |
+          mkdir -p proyecto
+          unzip -o Avance_GN_Android_Proyecto_v17_RAIZ.zip -d proyecto
+      - name: Aplicar correcciones de seguridad
+        run: python3 security/harden.py
+      - name: Compilar APK
+        run: |
+          cd proyecto
+          gradle assembleDebug
+      - name: Verificar APK generado
+        run: |
+          test -n "$(find proyecto/app/build/outputs/apk -name '*.apk' -type f -print -quit)"
+          find proyecto/app/build/outputs/apk -name '*.apk' -type f -exec ls -lh {} \;
+      - name: Guardar APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Avance-GN-APK-seguridad
+          path: proyecto/app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
