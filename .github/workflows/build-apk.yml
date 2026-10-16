@@ -14,7 +14,7 @@ jobs:
   construir:
     runs-on: ubuntu-latest
 
-        steps:
+            steps:
       - name: Descargar proyecto
         uses: actions/checkout@v4
 
