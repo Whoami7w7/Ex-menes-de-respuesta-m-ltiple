@@ -1,0 +1,17 @@
+plugins { id 'com.android.application' }
+
+android {
+    namespace 'mx.avancegn.examen'
+    compileSdk 35
+    defaultConfig {
+        applicationId 'mx.avancegn.examen'
+        minSdk 23
+        targetSdk 35
+        versionCode 18
+        versionName '1.8'
+    }
+}
+
+dependencies {
+    implementation 'com.tom-roush:pdfbox-android:2.0.27.0'
+}

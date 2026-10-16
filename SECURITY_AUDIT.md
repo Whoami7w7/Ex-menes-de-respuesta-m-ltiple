@@ -1,18 +1,19 @@
-# Avance G-N — revisión de seguridad inicial
+# Avance G-N — revisión de seguridad y alcance (v18)
 
-## Hallazgo corregido por este parche
-La pantalla de historial construía HTML mediante `innerHTML` usando datos recuperados de `localStorage`. Si esos datos se manipularan, podrían inyectarse etiquetas o atributos HTML en el WebView. El parche reemplaza ese renderizado por nodos DOM y `textContent`, y valida la estructura básica del historial antes de usarlo.
+## Cambios aplicados en el código fuente
+- El historial valida la estructura básica de los registros recuperados de `localStorage`.
+- La pantalla de historial se construye con nodos DOM y `textContent`, no interpolando contenido guardado dentro de `innerHTML`.
+- Se deshabilitan el acceso del WebView al contenido de otros archivos, el acceso universal desde URLs `file:`, el contenido mixto, ventanas emergentes y navegación fuera de los recursos locales empaquetados.
+- Se desactiva la copia de seguridad automática de datos de la app.
+- La interfaz de importación acepta PDF, DOCX y TXT a través del selector de documentos de Android; no requiere permiso de almacenamiento general.
+- El lector impone límite de 15 MB por archivo y limita el texto extraído a 1.5 millones de caracteres.
+- El lector DOCX desactiva DTD y entidades externas para reducir riesgo de XXE.
+- La exportación comparte el texto mediante `ACTION_SEND` sin exponer una URI `file://`.
+- El parser de PDF se empaqueta como dependencia de la app; la lectura no requiere enviar documentos a un servidor.
 
-## Verificaciones pendientes
-- Revisar `AndroidManifest.xml`: permisos mínimos, `android:exported`, componentes y configuración de backup.
-- Revisar configuración de WebView: JavaScript bridges, acceso a archivos, contenido mixto, navegación externa y depuración.
-- Revisar dependencias, versiones de Gradle/Android Gradle Plugin y acciones de GitHub fijadas a versiones seguras.
-- Evaluar cifrado del historial y borrador; `localStorage` no es almacenamiento cifrado.
-- Comprobar la firma del APK y separar builds de depuración y de lanzamiento.
-- Probar datos locales malformados, almacenamiento lleno y archivos grandes.
-
-## Límites
-Este parche solo corrige el renderizado del historial en el HTML incluido en el proyecto. No equivale a una auditoría completa ni certifica el APK como seguro. No se ha inspeccionado aquí el código Android completo.
-
-## Inteligencia e importación
-El APK inspeccionado contiene un banco integrado y no se observó una función de importación en la interfaz examinada. La importación PDF/DOCX requiere incorporar parsers compatibles, preferentemente empaquetados localmente. No se debe enviar el contenido de documentos a terceros sin consentimiento claro. La generación automática debe permitir revisar las preguntas y mostrar la fuente del texto.
+## Limitaciones conocidas
+- Los PDF escaneados que contienen únicamente imágenes necesitan OCR; esta versión extrae texto embebido.
+- Las preguntas del documento se generan heurísticamente a partir de fragmentos y distractores de otros fragmentos del mismo documento. Es una ayuda de estudio, no una garantía de exactitud; debe revisarse cada reactivo y su respuesta contra la fuente.
+- El compendio original de 100 reactivos se conserva.
+- No se pudo ejecutar una compilación Android local en este entorno porque no hay Android SDK ni Gradle instalados. El flujo GitHub Actions está fijado a Gradle 8.9 para ejecutar la compilación en nube.
+- No es una auditoría de seguridad certificada. Aún se requiere validar el artefacto compilado, probar documentos reales, comprobar el comportamiento en varios Android y realizar análisis estático de dependencias.
