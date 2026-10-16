@@ -4,18 +4,14 @@ on:
   workflow_dispatch:
   push:
     paths:
-      - 'app/**'
-      - 'build.gradle'
-      - 'settings.gradle'
-      - 'gradle/**'
-      - 'gradlew'
+      - 'Avance_GN_Android_Proyecto_v17_RAIZ.zip'
       - '.github/workflows/build-apk.yml'
 
 permissions:
   contents: read
 
 jobs:
-  build:
+  construir:
     runs-on: ubuntu-latest
 
     steps:
@@ -28,15 +24,31 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Preparar Gradle
-        run: chmod +x gradlew
+      - name: Extraer proyecto ZIP
+        run: |
+          mkdir -p proyecto
+          unzip -o Avance_GN_Android_Proyecto_v17_RAIZ.zip -d proyecto
+          echo "Contenido extraído:"
+          find proyecto -maxdepth 4 -type f | head -100
+
+      - name: Localizar Gradle
+        run: |
+          GRADLEW=$(find proyecto -type f -name gradlew | head -1)
+          if [ -z "$GRADLEW" ]; then
+            echo "ERROR: No se encontró gradlew en el ZIP."
+            exit 1
+          fi
+          chmod +x "$GRADLEW"
+          echo "GRADLE_DIR=$(dirname "$GRADLEW")" >> "$GITHUB_ENV"
 
       - name: Compilar APK
-        run: ./gradlew assembleDebug
+        run: |
+          cd "$GRADLE_DIR"
+          ./gradlew assembleDebug
 
       - name: Guardar APK
         uses: actions/upload-artifact@v4
         with:
-          name: Avance-GN-debug-APK
-          path: app/build/outputs/apk/debug/*.apk
+          name: Avance-GN-APK
+          path: proyecto/**/build/outputs/apk/debug/*.apk
           if-no-files-found: error
