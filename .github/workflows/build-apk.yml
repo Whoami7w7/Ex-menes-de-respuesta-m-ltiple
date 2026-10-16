@@ -18,7 +18,7 @@ jobs:
       - name: Descargar proyecto
         uses: actions/checkout@v4
 
-                        - name: Configurar Java
+                              - name: Configurar Java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
