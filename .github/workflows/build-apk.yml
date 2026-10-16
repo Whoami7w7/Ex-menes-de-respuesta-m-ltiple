@@ -24,31 +24,24 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Extraer proyecto ZIP
+      - name: Instalar Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.7'
+
+      - name: Extraer proyecto
         run: |
           mkdir -p proyecto
           unzip -o Avance_GN_Android_Proyecto_v17_RAIZ.zip -d proyecto
-          echo "Contenido extraído:"
-          find proyecto -maxdepth 4 -type f | head -100
-
-      - name: Localizar Gradle
-        run: |
-          GRADLEW=$(find proyecto -type f -name gradlew | head -1)
-          if [ -z "$GRADLEW" ]; then
-            echo "ERROR: No se encontró gradlew en el ZIP."
-            exit 1
-          fi
-          chmod +x "$GRADLEW"
-          echo "GRADLE_DIR=$(dirname "$GRADLEW")" >> "$GITHUB_ENV"
 
       - name: Compilar APK
         run: |
-          cd "$GRADLE_DIR"
-          ./gradlew assembleDebug
+          cd proyecto
+          gradle assembleDebug
 
       - name: Guardar APK
         uses: actions/upload-artifact@v4
         with:
           name: Avance-GN-APK
-          path: proyecto/**/build/outputs/apk/debug/*.apk
+          path: proyecto/app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
