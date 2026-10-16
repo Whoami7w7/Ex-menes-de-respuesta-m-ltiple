@@ -18,13 +18,13 @@ jobs:
       - name: Descargar proyecto
         uses: actions/checkout@v4
 
-      - name: Configurar Java
+                        - name: Configurar Java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
 
-      -                   - name: Instalar Gradle
+      - name: Instalar Gradle
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.9'
